@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Student Information</title>
+  <style>
+    /* 居中样式 */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .form-container {
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .form-container > div {
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="form-container">
+    <h2>Edit Student Information</h2>
+    <div>
+      <input type="text" v-model="studentName" placeholder="姓名">
+    </div>
+    <div>
+      <input type="text" v-model="studentId" placeholder="学号">
+    </div>
+    <div>
+      <input type="email" v-model="studentEmail" placeholder="邮箱" disabled>
+    </div>
+    <div>
+      <input type="text" v-model="studentMajor" placeholder="专业">
+    </div>
+    <div>
+      <button class="btn" @click="updateStudentInfo">更新信息</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      studentName: '',
+      studentId: '',
+      studentEmail: '',
+      studentMajor: ''
+    },
+    mounted() {
+      // 根据登录时存储的邮箱信息获取学生信息
+      const email = localStorage.getItem('email');
+      fetch(`http://localhost:8080/students/${email}`)
+              .then(response => response.json())
+              .then(data => {
+                // 将学生信息显示在界面上
+                const student = data.data; // Assuming the student information is inside `data.data`
+                this.studentName = student.name;
+                this.studentId = student.studentId;
+                this.studentEmail = student.email;
+                this.studentMajor = student.major;
+              })
+              .catch(error => {
+                console.error('获取学生信息失败:', error);
+                window.alert('获取学生信息失败：网络或服务器错误');
+              });
+    },
+    methods: {
+      updateStudentInfo() {
+        // 更新学生信息
+        const student = {
+          name: this.studentName,
+          studentId: this.studentId,
+          email: this.studentEmail,
+          major: this.studentMajor
+        };
+
+        fetch('http://localhost:8080/students', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(student)
+        })
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('更新失败: ' + response.statusText);
+                  }
+                  return response.json();
+                })
+                .then(() => {
+                  window.alert('信息更新成功');
+                  window.location.href = 'student.html'; // 重定向到 student.html 页面
+                })
+                .catch(error => {
+                  console.error('更新失败:', error);
+                  window.alert('信息更新失败：网络或服务器错误');
+                });
+    }}
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--  <title>Login Page</title>-->
+<!--  <style>-->
+<!--    /* 居中样式 */-->
+<!--    body {-->
+<!--      display: flex;-->
+<!--      justify-content: center;-->
+<!--      align-items: center;-->
+<!--      height: 100vh;-->
+<!--      margin: 0;-->
+<!--    }-->
+
+<!--    .form-container {-->
+<!--      background-color: #f9f9f9;-->
+<!--      border: 1px solid #ccc;-->
+<!--      padding: 20px;-->
+<!--      border-radius: 5px;-->
+<!--      display: flex;-->
+<!--      flex-direction: column;-->
+<!--      align-items: center;-->
+<!--    }-->
+
+<!--    .form-container > div {-->
+<!--      margin-bottom: 10px;-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div id="app">-->
+<!--  &lt;!&ndash; 登录表单 &ndash;&gt;-->
+<!--  <div v-if="!showRegisterForm" class="form-container">-->
+<!--    <div>-->
+<!--      <h1>Login</h1>-->
+<!--      <select v-model="selectedUserType" :disabled="registering">-->
+<!--        <option value="admin">管理员</option>-->
+<!--        <option value="teacher">教师</option>-->
+<!--        <option value="student">学生</option>-->
+<!--      </select>-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <input type="email" v-model="email" placeholder="邮箱" :disabled="registering">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <input type="password" v-model="password" placeholder="密码" :disabled="registering">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <button @click="login" :disabled="registering">登录</button>-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <button @click="showRegisterForm = true" :disabled="registering">注册</button>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; 注册表单 &ndash;&gt;-->
+<!--  <div v-if="showRegisterForm" class="form-container">-->
+<!--    <h2>Register</h2>-->
+<!--    <div>-->
+<!--      <input type="email" v-model="newEmail" placeholder="邮箱" :disabled="registering">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <input type="password" v-model="newPassword" placeholder="密码" :disabled="registering">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <label for="isTeacherCheckbox">是否为老师：</label>-->
+<!--      <input type="checkbox" id="isTeacherCheckbox" v-model="isTeacher" :disabled="registering">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <button @click="register" :disabled="registering">注册</button>-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <button @click="showRegisterForm = false" :disabled="registering">返回登录</button>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+<!--<script>-->
+<!--  new Vue({-->
+<!--    el: '#app',-->
+<!--    data: {-->
+<!--      selectedUserType: 'admin',-->
+<!--      email: '',-->
+<!--      password: '',-->
+<!--      loggedIn: false,-->
+<!--      showRegisterForm: false,-->
+<!--      newEmail: '',-->
+<!--      newPassword: '',-->
+<!--      isTeacher: false,-->
+<!--      registering: false // 是否正在注册的标志-->
+<!--    },-->
+<!--    methods: {-->
+<!--      login() {-->
+<!--        fetch(`http://localhost:8080/UserPasswords/${this.email}`)-->
+<!--                .then(response => {-->
+<!--                  if (!response.ok) {-->
+<!--                    throw new Error('Network response was not ok');-->
+<!--                  }-->
+<!--                  return response.json();-->
+<!--                  console.log(data);-->
+<!--                })-->
+<!--                .then(data => {-->
+<!--                  window.alert(data.data.password);-->
+<!--                  window.alert(this.password);-->
+<!--                  if (data.code&&data.data.password==this.password) {-->
+<!--                    window.alert('登录成功');-->
+<!--                    this.loggedIn = true;-->
+<!--                    localStorage.setItem('userType', data.isTeacher ? 'teacher' : (data.isAdmin ? 'admin' : 'student'));-->
+<!--                    localStorage.setItem('email', this.email);-->
+<!--                    switch (localStorage.getItem('userType')) {-->
+<!--                      case 'admin':-->
+<!--                        window.location.href = '/admin.html';-->
+<!--                        break;-->
+<!--                      case 'teacher':-->
+<!--                        window.location.href = '/teacher.html';-->
+<!--                        break;-->
+<!--                      case 'student':-->
+<!--                        window.location.href = '/student.html';-->
+<!--                        break;-->
+<!--                      default:-->
+<!--                        break;-->
+<!--                    }-->
+<!--                  } else {-->
+<!--                    window.alert('登录失败：密码错误或账号不存在');-->
+<!--                  }-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                  console.error('登录失败:', error);-->
+<!--                  window.alert('登录失败：网络或服务器错误');-->
+<!--                });-->
+<!--      },-->
+<!--      register() {-->
+<!--        this.registering = true; // 开始注册，禁用其他操作-->
+<!--        fetch('http://localhost:8080/UserPasswords', {-->
+<!--          method: 'POST',-->
+<!--          headers: {-->
+<!--            'Content-Type': 'application/json'-->
+<!--          },-->
+<!--          body: JSON.stringify({-->
+<!--            email: this.newEmail,-->
+<!--            password: this.newPassword,-->
+<!--            isTeacher: this.isTeacher-->
+<!--          })-->
+<!--        })-->
+<!--                .then(response => {-->
+<!--                  if (!response.ok) {-->
+<!--                    throw new Error('注册失败: ' + response.statusText);-->
+<!--                  }-->
+<!--                  return response.json();-->
+<!--                })-->
+<!--                .then(() => {-->
+<!--                  this.showRegisterForm = false;-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                  console.error('注册失败:', error);-->
+<!--                  window.alert('注册失败: 请查看控制台输出以获取更多信息');-->
+<!--                })-->
+<!--                .finally(() => {-->
+<!--                  this.registering = false; // 注册结束，允许其他操作-->
+<!--                });-->
+<!--      },-->
+<!--      closeRegisterForm() {-->
+<!--        this.showRegisterForm = false;-->
+<!--      }-->
+<!--    }-->
+<!--  });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    /* 居中样式 */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .form-container {
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .form-container > div {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- 登录表单 -->
+  <div v-if="!showRegisterForm" class="form-container">
+    <div>
+      <h1>Login</h1>
+      <select v-model="selectedUserType" :disabled="registering">
+        <option value="admin">管理员</option>
+        <option value="teacher">教师</option>
+        <option value="student">学生</option>
+      </select>
+    </div>
+    <div>
+      <input type="email" v-model="email" placeholder="邮箱" :disabled="registering">
+    </div>
+    <div>
+      <input type="password" v-model="password" placeholder="密码" :disabled="registering">
+    </div>
+    <div>
+      <button @click="login" :disabled="registering">登录</button>
+    </div>
+    <div>
+      <button @click="showRegisterForm = true" :disabled="registering">注册</button>
+    </div>
+  </div>
+
+  <!-- 注册表单 -->
+  <div v-if="showRegisterForm" class="form-container">
+    <h2>Register</h2>
+    <div>
+      <input type="email" v-model="newEmail" placeholder="邮箱" :disabled="registering">
+    </div>
+    <div>
+      <input type="password" v-model="newPassword" placeholder="密码" :disabled="registering">
+    </div>
+    <div>
+      <label for="isTeacherCheckbox">是否为老师：</label>
+      <input type="checkbox" id="isTeacherCheckbox" v-model="isTeacher" :disabled="registering">
+    </div>
+    <div>
+      <button @click="register" :disabled="registering">注册</button>
+    </div>
+    <div>
+      <button @click="showRegisterForm = false" :disabled="registering">返回登录</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      selectedUserType: 'admin',
+      email: '',
+      password: '',
+      loggedIn: false,
+      showRegisterForm: false,
+      newEmail: '',
+      newPassword: '',
+      isTeacher: false,
+      registering: false // 是否正在注册的标志
+    },
+    methods: {
+      login() {
+        fetch(`http://localhost:8080/UserPasswords/${this.email}`)
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                  }
+                  return response.json();
+                })
+                .then(data => {
+                  if (data.code && data.data.password === this.password) {
+                    window.alert('登录成功');
+                    this.loggedIn = true;
+                    const userType = data.data.isTeacher ? 'teacher' : (data.data.isAdmin ? 'admin' : 'student');
+                    localStorage.setItem('userType', userType);
+                    localStorage.setItem('email', this.email);
+                    switch (userType) {
+                      case 'admin':
+                        window.location.href = './admin.html';
+                        break;
+                      case 'teacher':
+                        window.location.href = './teacher.html';
+                        break;
+                      case 'student':
+                        window.location.href = './student.html';
+                        break;
+                      default:
+                        break;
+                    }
+                  } else {
+                    window.alert('登录失败：密码错误或账号不存在');
+                  }
+                })
+                .catch(error => {
+                  console.error('登录失败:', error);
+                  window.alert('登录失败：网络或服务器错误');
+                });
+      },
+      register() {
+        this.registering = true; // 开始注册，禁用其他操作
+        fetch('http://localhost:8080/UserPasswords', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: this.newEmail,
+            password: this.newPassword,
+            isTeacher: this.isTeacher
+          })
+        })
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('注册失败: ' + response.statusText);
+                  }
+                  return response.json();
+                })
+                .then(() => {
+                  this.showRegisterForm = false;
+                  window.alert('注册成功，请登录');
+                })
+                .catch(error => {
+                  console.error('注册失败:', error);
+                  window.alert('注册失败: 请查看控制台输出以获取更多信息');
+                })
+                .finally(() => {
+                  this.registering = false; // 注册结束，允许其他操作
+                });
+      }
+    }
+  });
+</script>
+</body>
+</html>

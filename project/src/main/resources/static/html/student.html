@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+</head>
+<body>
+<div id="app">
+  <h1>Welcome, Student!</h1>
+  <div>
+    <h2>Your Information</h2>
+    <p>Name: <span id="studentName">Loading...</span></p>
+    <p>Student ID: <span id="studentId">Loading...</span></p>
+    <p>Email: <span id="studentEmail">Loading...</span></p>
+    <p>Major: <span id="studentMajor">Loading...</span></p>
+    <button id="editInfoBtn">Edit Information</button>
+    <button id="appointmentBtn">Make Appointment</button> <!-- 添加预约按钮 -->
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const email = localStorage.getItem('email');
+    const userType = localStorage.getItem('userType');
+
+    if (userType === 'student') {
+      fetch(`http://localhost:8080/students/${email}`)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Network response was not ok');
+                }
+                return response.json();
+              })
+              .then(data => {
+                if (data.code) {
+                  const student = data.data;
+                  document.getElementById('studentName').textContent = student.name;
+                  document.getElementById('studentId').textContent = student.studentId;
+                  document.getElementById('studentEmail').textContent = student.email;
+                  document.getElementById('studentMajor').textContent = student.major;
+                } else {
+                  alert('Failed to load student information.');
+                }
+              })
+              .catch(error => {
+                console.error('Error fetching student information:', error);
+                alert('Error fetching student information. Please try again later.');
+              });
+    } else {
+      alert('You are not authorized to view this page.');
+      window.location.href = 'login.html'; // Redirect to login page if not a student
+    }
+
+    // Edit information button click handler
+    document.getElementById('editInfoBtn').addEventListener('click', function() {
+      // Redirect to the edit information page
+      window.location.href = './student-edit.html';
+    });
+
+    // Make appointment button click handler
+    document.getElementById('appointmentBtn').addEventListener('click', function() {
+      // Redirect to the appointment page
+      window.location.href = 'freeTime.html';
+    });
+  });
+</script>
+</body>
+</html>

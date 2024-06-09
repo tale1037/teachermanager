@@ -1,0 +1,588 @@
+<!--&lt;!&ndash;<!DOCTYPE html>&ndash;&gt;-->
+<!--&lt;!&ndash;<html lang="en">&ndash;&gt;-->
+<!--&lt;!&ndash;<head>&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta charset="UTF-8">&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta name="viewport" content="width=device-width, initial-scale=1.0">&ndash;&gt;-->
+<!--&lt;!&ndash;    <title>Appointment Page</title>&ndash;&gt;-->
+<!--&lt;!&ndash;</head>&ndash;&gt;-->
+<!--&lt;!&ndash;<body>&ndash;&gt;-->
+<!--&lt;!&ndash;<div id="app">&ndash;&gt;-->
+<!--&lt;!&ndash;    <h1>Appointment Page</h1>&ndash;&gt;-->
+<!--&lt;!&ndash;    <table border="1">&ndash;&gt;-->
+<!--&lt;!&ndash;        <thead>&ndash;&gt;-->
+<!--&lt;!&ndash;        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;            <th>Time Slot</th>&ndash;&gt;-->
+<!--&lt;!&ndash;            <th>Teacher Email</th>&ndash;&gt;-->
+<!--&lt;!&ndash;            <th>Teacher Name</th>&ndash;&gt;-->
+<!--&lt;!&ndash;            <th>Teacher Title</th>&ndash;&gt;-->
+<!--&lt;!&ndash;            <th>Teacher Department</th>&ndash;&gt;-->
+<!--&lt;!&ndash;            <th>Action</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;        </thead>&ndash;&gt;-->
+<!--&lt;!&ndash;        <tbody>&ndash;&gt;-->
+<!--&lt;!&ndash;        <tr v-for="appointment in appointments" :key="appointment.timeSlot">&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>{{ appointment.timeSlot }}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>{{ appointment.teacherEmail }}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>{{ appointment.teacherName }}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>{{ appointment.teacherTitle }}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>{{ appointment.teacherDepartment }}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td><button @click="makeAppointment(appointment.teacherEmail, appointment.timeSlot)">预约</button></td>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tbody>&ndash;&gt;-->
+<!--&lt;!&ndash;    </table>&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>&ndash;&gt;-->
+<!--&lt;!&ndash;<script>&ndash;&gt;-->
+<!--&lt;!&ndash;    new Vue({&ndash;&gt;-->
+<!--&lt;!&ndash;        el: '#app',&ndash;&gt;-->
+<!--&lt;!&ndash;        data: {&ndash;&gt;-->
+<!--&lt;!&ndash;            appointments: []&ndash;&gt;-->
+<!--&lt;!&ndash;        },&ndash;&gt;-->
+<!--&lt;!&ndash;        mounted() {&ndash;&gt;-->
+<!--&lt;!&ndash;            this.fetchAppointments();&ndash;&gt;-->
+<!--&lt;!&ndash;        },&ndash;&gt;-->
+<!--&lt;!&ndash;        methods: {&ndash;&gt;-->
+<!--&lt;!&ndash;            fetchAppointments() {&ndash;&gt;-->
+<!--&lt;!&ndash;                // 从后端获取预约信息&ndash;&gt;-->
+<!--&lt;!&ndash;                fetch('http://localhost:8080/freeTimes')&ndash;&gt;-->
+<!--&lt;!&ndash;                    .then(response => response.json())&ndash;&gt;-->
+<!--&lt;!&ndash;                    .then(data => {&ndash;&gt;-->
+<!--&lt;!&ndash;                        // 遍历每个预约时间&ndash;&gt;-->
+<!--&lt;!&ndash;                        data.data.forEach(appointment => {&ndash;&gt;-->
+<!--&lt;!&ndash;                            // 根据老师邮箱获取老师信息&ndash;&gt;-->
+<!--&lt;!&ndash;                            fetch(`http://localhost:8080/teachers/${appointment.teacherEmail}`)&ndash;&gt;-->
+<!--&lt;!&ndash;                                .then(response => response.json())&ndash;&gt;-->
+<!--&lt;!&ndash;                                .then(teacherData => {&ndash;&gt;-->
+<!--&lt;!&ndash;                                    // 将老师信息与预约时间合并为一个对象&ndash;&gt;-->
+<!--&lt;!&ndash;                                    const fullAppointment = {&ndash;&gt;-->
+<!--&lt;!&ndash;                                        timeSlot: appointment.timeSlot,&ndash;&gt;-->
+<!--&lt;!&ndash;                                        teacherEmail: appointment.teacherEmail,&ndash;&gt;-->
+<!--&lt;!&ndash;                                        teacherName: teacherData.data.name,&ndash;&gt;-->
+<!--&lt;!&ndash;                                        teacherTitle: teacherData.data.title,&ndash;&gt;-->
+<!--&lt;!&ndash;                                        teacherDepartment: teacherData.data.department&ndash;&gt;-->
+<!--&lt;!&ndash;                                    };&ndash;&gt;-->
+<!--&lt;!&ndash;                                    // 将合并后的对象添加到 appointments 数组中&ndash;&gt;-->
+<!--&lt;!&ndash;                                    this.appointments.push(fullAppointment);&ndash;&gt;-->
+<!--&lt;!&ndash;                                })&ndash;&gt;-->
+<!--&lt;!&ndash;                                .catch(error => {&ndash;&gt;-->
+<!--&lt;!&ndash;                                    console.error('Error fetching teacher data:', error);&ndash;&gt;-->
+<!--&lt;!&ndash;                                    alert('Error fetching teacher data. Please try again later.');&ndash;&gt;-->
+<!--&lt;!&ndash;                                });&ndash;&gt;-->
+<!--&lt;!&ndash;                        });&ndash;&gt;-->
+<!--&lt;!&ndash;                    })&ndash;&gt;-->
+<!--&lt;!&ndash;                    .catch(error => {&ndash;&gt;-->
+<!--&lt;!&ndash;                        console.error('Error fetching appointment data:', error);&ndash;&gt;-->
+<!--&lt;!&ndash;                        alert('Error fetching appointment data. Please try again later.');&ndash;&gt;-->
+<!--&lt;!&ndash;                    });&ndash;&gt;-->
+<!--&lt;!&ndash;            },&ndash;&gt;-->
+<!--&lt;!&ndash;            makeAppointment(teacherEmail, timeSlot) {&ndash;&gt;-->
+<!--&lt;!&ndash;                // 执行预约操作&ndash;&gt;-->
+<!--&lt;!&ndash;                window.alert('Making appointment with teacher:', teacherEmail, 'at time slot:', timeSlot);&ndash;&gt;-->
+<!--&lt;!&ndash;                fetch(`http://localhost:8080/appointments/${teacherEmail}/${localStorage.getItem('email')}/${timeSlot}`, {&ndash;&gt;-->
+<!--&lt;!&ndash;                    method: 'POST'&ndash;&gt;-->
+<!--&lt;!&ndash;                })&ndash;&gt;-->
+<!--&lt;!&ndash;                    .then(response => {&ndash;&gt;-->
+<!--&lt;!&ndash;                        if (!response.ok) {&ndash;&gt;-->
+<!--&lt;!&ndash;                            throw new Error('Network response was not ok');&ndash;&gt;-->
+<!--&lt;!&ndash;                        }&ndash;&gt;-->
+<!--&lt;!&ndash;                        return response.json();&ndash;&gt;-->
+<!--&lt;!&ndash;                    })&ndash;&gt;-->
+<!--&lt;!&ndash;                    .then(() => {&ndash;&gt;-->
+<!--&lt;!&ndash;                        alert('预约成功！');&ndash;&gt;-->
+<!--&lt;!&ndash;                    })&ndash;&gt;-->
+<!--&lt;!&ndash;                    .catch(error => {&ndash;&gt;-->
+<!--&lt;!&ndash;                        console.error('Error making appointment:', error);&ndash;&gt;-->
+<!--&lt;!&ndash;                        alert('Error making appointment. Please try again later.');&ndash;&gt;-->
+<!--&lt;!&ndash;                    });&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+<!--&lt;!&ndash;</body>&ndash;&gt;-->
+<!--&lt;!&ndash;</html>&ndash;&gt;-->
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Appointment Page</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div id="app">-->
+<!--    <h1>Appointment Page</h1>-->
+<!--    <button @click="goToAppointmentList">查询已有预约</button>-->
+<!--    <table border="1">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Time Slot</th>-->
+<!--            <th>Teacher Email</th>-->
+<!--            <th>Teacher Name</th>-->
+<!--            <th>Teacher Title</th>-->
+<!--            <th>Teacher Department</th>-->
+<!--            <th>Action</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr v-for="appointment in appointments" :key="appointment.timeSlot">-->
+<!--            <td>{{ appointment.timeSlot }}</td>-->
+<!--            <td>{{ appointment.teacherEmail }}</td>-->
+<!--            <td>{{ appointment.teacherName }}</td>-->
+<!--            <td>{{ appointment.teacherTitle }}</td>-->
+<!--            <td>{{ appointment.teacherDepartment }}</td>-->
+<!--            <td><button @click="makeAppointment(appointment.teacherEmail, appointment.timeSlot)">预约</button></td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+<!--<script>-->
+<!--    new Vue({-->
+<!--        el: '#app',-->
+<!--        data: {-->
+<!--            appointments: []-->
+<!--        },-->
+<!--        mounted() {-->
+<!--            this.fetchAppointments();-->
+<!--        },-->
+<!--        methods: {-->
+<!--            fetchAppointments() {-->
+<!--                // 从后端获取预约信息-->
+<!--                fetch('http://localhost:8080/freeTimes')-->
+<!--                    .then(response => response.json())-->
+<!--                    .then(data => {-->
+<!--                        // 遍历每个预约时间-->
+<!--                        data.data.forEach(appointment => {-->
+<!--                            // 根据老师邮箱获取老师信息-->
+<!--                            fetch(`http://localhost:8080/teachers/${appointment.teacherEmail}`)-->
+<!--                                .then(response => response.json())-->
+<!--                                .then(teacherData => {-->
+<!--                                    // 将老师信息与预约时间合并为一个对象-->
+<!--                                    const fullAppointment = {-->
+<!--                                        timeSlot: appointment.timeSlot,-->
+<!--                                        teacherEmail: appointment.teacherEmail,-->
+<!--                                        teacherName: teacherData.data.name,-->
+<!--                                        teacherTitle: teacherData.data.title,-->
+<!--                                        teacherDepartment: teacherData.data.department-->
+<!--                                    };-->
+<!--                                    // 将合并后的对象添加到 appointments 数组中-->
+<!--                                    this.appointments.push(fullAppointment);-->
+<!--                                })-->
+<!--                                .catch(error => {-->
+<!--                                    console.error('Error fetching teacher data:', error);-->
+<!--                                    alert('Error fetching teacher data. Please try again later.');-->
+<!--                                });-->
+<!--                        });-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.error('Error fetching appointment data:', error);-->
+<!--                        alert('Error fetching appointment data. Please try again later.');-->
+<!--                    });-->
+<!--            },-->
+<!--            makeAppointment(teacherEmail, timeSlot) {-->
+<!--                // 执行预约操作-->
+<!--                window.alert('Making appointment with teacher:', teacherEmail, 'at time slot:', timeSlot);-->
+<!--                fetch(`http://localhost:8080/appointments/${teacherEmail}/${localStorage.getItem('email')}/${timeSlot}`, {-->
+<!--                    method: 'POST'-->
+<!--                })-->
+<!--                    .then(response => {-->
+<!--                        if (!response.ok) {-->
+<!--                            throw new Error('Network response was not ok');-->
+<!--                        }-->
+<!--                        return response.json();-->
+<!--                    })-->
+<!--                    .then(() => {-->
+<!--                        alert('预约成功！');-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.error('Error making appointment:', error);-->
+<!--                        alert('Error making appointment. Please try again later.');-->
+<!--                    });-->
+<!--            },-->
+<!--            goToAppointmentList() {-->
+<!--                // 跳转到查询已有预约页面-->
+<!--                window.location.href = './appointment-list.html';-->
+<!--            }-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Appointment Page</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div id="app">-->
+<!--    <h1>Appointment Page</h1>-->
+<!--    <button @click="goToAppointmentList">查询已有预约</button>-->
+
+<!--    <div>-->
+<!--        <label for="teacherName">Teacher Name: </label>-->
+<!--        <input type="text" id="teacherName" v-model="teacherName">-->
+<!--        <button @click="fetchAppointmentsByTeacherName">查询</button>-->
+<!--    </div>-->
+
+<!--    <div>-->
+<!--        <label for="teacherDepartment">Teacher Department: </label>-->
+<!--        <input type="text" id="teacherDepartment" v-model="teacherDepartment">-->
+<!--        <button @click="fetchAppointmentsByTeacherDepartment">查询</button>-->
+<!--    </div>-->
+
+<!--    <table border="1">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Time Slot</th>-->
+<!--            <th>Teacher Email</th>-->
+<!--            <th>Teacher Name</th>-->
+<!--            <th>Teacher Title</th>-->
+<!--            <th>Teacher Department</th>-->
+<!--            <th>Action</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr v-for="appointment in appointments" :key="appointment.timeSlot">-->
+<!--            <td>{{ appointment.timeSlot }}</td>-->
+<!--            <td>{{ appointment.teacherEmail }}</td>-->
+<!--            <td>{{ appointment.teacherName }}</td>-->
+<!--            <td>{{ appointment.teacherTitle }}</td>-->
+<!--            <td>{{ appointment.teacherDepartment }}</td>-->
+<!--            <td><button @click="makeAppointment(appointment.teacherEmail, appointment.timeSlot)">预约</button></td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+<!--<script>-->
+<!--    new Vue({-->
+<!--        el: '#app',-->
+<!--        data: {-->
+<!--            appointments: [],-->
+<!--            teacherName: '',-->
+<!--            teacherDepartment: ''-->
+<!--        },-->
+<!--        mounted() {-->
+<!--            this.fetchAppointments();-->
+<!--        },-->
+<!--        methods: {-->
+<!--            fetchAppointments() {-->
+<!--                // 从后端获取预约信息-->
+<!--                fetch('http://localhost:8080/freeTimes')-->
+<!--                    .then(response => response.json())-->
+<!--                    .then(data => {-->
+<!--                        this.appointments = [];-->
+<!--                        // 遍历每个预约时间-->
+<!--                        data.data.forEach(freetime => {-->
+<!--                            // 根据老师邮箱获取老师信息-->
+<!--                            fetch(`http://localhost:8080/teachers/${freetime.teacherEmail}`)-->
+<!--                                .then(response => response.json())-->
+<!--                                .then(teacherData => {-->
+<!--                                    // 将老师信息与预约时间合并为一个对象-->
+<!--                                    const fullAppointment = {-->
+<!--                                        timeSlot: freetime.timeSlot,-->
+<!--                                        teacherEmail: freetime.teacherEmail,-->
+<!--                                        teacherName: teacherData.data.name,-->
+<!--                                        teacherTitle: teacherData.data.title,-->
+<!--                                        teacherDepartment: teacherData.data.department-->
+<!--                                    };-->
+<!--                                    // 将合并后的对象添加到 appointments 数组中-->
+<!--                                    this.appointments.push(fullAppointment);-->
+<!--                                })-->
+<!--                                .catch(error => {-->
+<!--                                    console.error('Error fetching teacher data:', error);-->
+<!--                                    alert('Error fetching teacher data. Please try again later.');-->
+<!--                                });-->
+<!--                        });-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.error('Error fetching appointment data:', error);-->
+<!--                        alert('Error fetching appointment data. Please try again later.');-->
+<!--                    });-->
+<!--            },-->
+<!--            fetchAppointmentsByTeacherName() {-->
+<!--                // 从后端根据教师姓名获取教师信息-->
+<!--                fetch(`http://localhost:8080/teachers/name/${this.teacherName}`)-->
+<!--                    .then(response => response.json())-->
+<!--                    .then(data => {-->
+<!--                        const teacherEmail = data.data.email;-->
+<!--                        // 根据教师email获取预约信息-->
+<!--                        this.fetchAppointmentsByEmail(teacherEmail);-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.error('Error fetching teacher data by name:', error);-->
+<!--                        alert('Error fetching teacher data by name. Please try again later.');-->
+<!--                    });-->
+<!--            },-->
+<!--            fetchAppointmentsByTeacherDepartment() {-->
+<!--                // 从后端根据教师部门获取教师信息-->
+<!--                fetch(`http://localhost:8080/teachers/department/${this.teacherDepartment}`)-->
+<!--                    .then(response => response.json())-->
+<!--                    .then(data => {-->
+<!--                        // 假设返回的data.data是一个教师列表-->
+<!--                        data.data.forEach(teacher => {-->
+<!--                            this.fetchAppointmentsByEmail(teacher.email);-->
+<!--                        });-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.error('Error fetching teacher data by department:', error);-->
+<!--                        alert('Error fetching teacher data by department. Please try again later.');-->
+<!--                    });-->
+<!--            },-->
+<!--            fetchAppointmentsByEmail(teacherEmail) {-->
+<!--                fetch(`http://localhost:8080/freeTimes/${teacherEmail}`)-->
+<!--                    .then(response => response.json())-->
+<!--                    .then(data => {-->
+<!--                        this.appointments = [];-->
+<!--                        data.data.forEach(appointment => {-->
+<!--                            fetch(`http://localhost:8080/teachers/${teacherEmail}`)-->
+<!--                                .then(response => response.json())-->
+<!--                                .then(teacherData => {-->
+<!--                                    const fullAppointment = {-->
+<!--                                        timeSlot: appointment.timeSlot,-->
+<!--                                        teacherEmail: appointment.teacherEmail,-->
+<!--                                        teacherName: teacherData.data.name,-->
+<!--                                        teacherTitle: teacherData.data.title,-->
+<!--                                        teacherDepartment: teacherData.data.department-->
+<!--                                    };-->
+<!--                                    this.appointments.push(fullAppointment);-->
+<!--                                })-->
+<!--                                .catch(error => {-->
+<!--                                    console.error('Error fetching teacher data:', error);-->
+<!--                                    alert('Error fetching teacher data. Please try again later.');-->
+<!--                                });-->
+<!--                        });-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.error('Error fetching appointments by email:', error);-->
+<!--                        alert('Error fetching appointments by email. Please try again later.');-->
+<!--                    });-->
+<!--            },-->
+<!--            makeAppointment(teacherEmail, timeSlot) {-->
+<!--                // 执行预约操作-->
+<!--                fetch(`http://localhost:8080/appointments/${teacherEmail}/${localStorage.getItem('email')}/${timeSlot}`, {-->
+<!--                    method: 'POST'-->
+<!--                })-->
+<!--                    .then(response => {-->
+<!--                        if (!response.ok) {-->
+<!--                            throw new Error('Network response was not ok');-->
+<!--                        }-->
+<!--                        return response.json();-->
+<!--                    })-->
+<!--                    .then(() => {-->
+<!--                        alert('预约成功！');-->
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.error('Error making appointment:', error);-->
+<!--                        alert('Error making appointment. Please try again later.');-->
+<!--                    });-->
+<!--            },-->
+<!--            goToAppointmentList() {-->
+<!--                // 跳转到查询已有预约页面-->
+<!--                window.location.href = './appointment-list.html';-->
+<!--            }-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Page</title>
+</head>
+<body>
+<div id="app">
+    <h1>Appointment Page</h1>
+    <button @click="goToAppointmentList">查询已有预约</button>
+
+    <div>
+        <label for="teacherName">Teacher Name: </label>
+        <input type="text" id="teacherName" v-model="teacherName">
+    </div>
+
+    <div>
+        <label for="teacherDepartment">Teacher Department: </label>
+        <select id="teacherDepartment" v-model="teacherDepartment">
+            <option value="">--Select Department--</option>
+            <option v-for="department in departments" :key="department" :value="department">{{ department }}</option>
+        </select>
+    </div>
+
+    <button @click="fetchAppointmentsByCriteria">查询</button>
+
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Time Slot</th>
+            <th>Teacher Email</th>
+            <th>Teacher Name</th>
+            <th>Teacher Title</th>
+            <th>Teacher Department</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="appointment in appointments" :key="appointment.timeSlot">
+            <td>{{ appointment.timeSlot }}</td>
+            <td>{{ appointment.teacherEmail }}</td>
+            <td>{{ appointment.teacherName }}</td>
+            <td>{{ appointment.teacherTitle }}</td>
+            <td>{{ appointment.teacherDepartment }}</td>
+            <td><button @click="makeAppointment(appointment.teacherEmail, appointment.timeSlot)">预约</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            appointments: [],
+            teacherName: '',
+            teacherDepartment: '',
+            departments: []
+        },
+        mounted() {
+            this.fetchDepartments();
+            this.fetchAppointments();
+        },
+        methods: {
+            fetchDepartments() {
+                // 获取所有教师的部门选项
+                fetch('http://localhost:8080/teachers/departments')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.departments = data.data;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching departments:', error);
+                        alert('Error fetching departments. Please try again later.');
+                    });
+            },
+            fetchAppointments() {
+                // 从后端获取预约信息
+                fetch('http://localhost:8080/freeTimes')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.appointments = [];
+                        // 遍历每个预约时间
+                        data.data.forEach(freetime => {
+                            // 根据老师邮箱获取老师信息
+                            fetch(`http://localhost:8080/teachers/${freetime.teacherEmail}`)
+                                .then(response => response.json())
+                                .then(teacherData => {
+                                    // 将老师信息与预约时间合并为一个对象
+                                    const fullAppointment = {
+                                        timeSlot: freetime.timeSlot,
+                                        teacherEmail: freetime.teacherEmail,
+                                        teacherName: teacherData.data.name,
+                                        teacherTitle: teacherData.data.title,
+                                        teacherDepartment: teacherData.data.department
+                                    };
+                                    // 将合并后的对象添加到 appointments 数组中
+                                    this.appointments.push(fullAppointment);
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching teacher data:', error);
+                                    alert('Error fetching teacher data. Please try again later.');
+                                });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching appointment data:', error);
+                        alert('Error fetching appointment data. Please try again later.');
+                    });
+            },
+            fetchAppointmentsByCriteria() {
+                let url = '';
+                if (this.teacherName && this.teacherDepartment) {
+                    url = `http://localhost:8080/teachers/name/${this.teacherName}/department/${this.teacherDepartment}`;
+                } else if (this.teacherName) {
+                    url = `http://localhost:8080/teachers/name/${this.teacherName}`;
+                } else if (this.teacherDepartment) {
+                    url = `http://localhost:8080/teachers/department/${this.teacherDepartment}`;
+                } else {
+                    alert('Please enter teacher name or select a department.');
+                    return;
+                }
+
+                // 根据教师姓名和/或部门查询教师信息
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.appointments = [];
+                        data.data.forEach(teacher => {
+                            this.fetchAppointmentsByEmail(teacher.email);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching teacher data:', error);
+                        alert('Error fetching teacher data. Please try again later.');
+                    });
+            },
+            fetchAppointmentsByEmail(teacherEmail) {
+                fetch(`http://localhost:8080/freeTimes/${teacherEmail}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.data.forEach(appointment => {
+                            fetch(`http://localhost:8080/teachers/${teacherEmail}`)
+                                .then(response => response.json())
+                                .then(teacherData => {
+                                    const fullAppointment = {
+                                        timeSlot: appointment.timeSlot,
+                                        teacherEmail: appointment.teacherEmail,
+                                        teacherName: teacherData.data.name,
+                                        teacherTitle: teacherData.data.title,
+                                        teacherDepartment: teacherData.data.department
+                                    };
+                                    this.appointments.push(fullAppointment);
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching teacher data:', error);
+                                    alert('Error fetching teacher data. Please try again later.');
+                                });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching appointments by email:', error);
+                        alert('Error fetching appointments by email. Please try again later.');
+                    });
+            },
+            makeAppointment(teacherEmail, timeSlot) {
+                fetch(`http://localhost:8080/appointments/${teacherEmail}/${localStorage.getItem('email')}/${timeSlot}`, {
+                    method: 'POST'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        alert('预约成功！');
+                    })
+                    .catch(error => {
+                        console.error('Error making appointment:', error);
+                        alert('Error making appointment. Please try again later.');
+                    });
+            },
+            goToAppointmentList() {
+                window.location.href = './appointment-list.html';
+            }
+        }
+    });
+</script>
+</body>
+</html>
+
+

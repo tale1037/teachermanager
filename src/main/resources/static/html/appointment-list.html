@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointment List</title>
+</head>
+<body>
+<div id="app">
+  <h1>Appointment List</h1>
+  <table border="1">
+    <thead>
+    <tr>
+      <th>Time Slot</th>
+      <th>Teacher Email</th>
+      <th>Teacher Name</th>
+      <th>Teacher Title</th>
+      <th>Teacher Department</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr v-for="appointment in appointments" :key="appointment.timeSlot">
+      <td>{{ appointment.timeSlot }}</td>
+      <td>{{ appointment.teacherEmail }}</td>
+      <td>{{ appointment.teacherName }}</td>
+      <td>{{ appointment.teacherTitle }}</td>
+      <td>{{ appointment.teacherDepartment }}</td>
+      <td><button @click="cancelAppointment(appointment.teacherEmail, appointment.timeSlot)">取消预约</button></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      appointments: []
+    },
+    mounted() {
+      this.fetchAppointments();
+    },
+    methods: {
+      fetchAppointments() {
+        // 从后端获取当前登录用户的所有预约信息
+        fetch(`http://localhost:8080/appointments/student/${localStorage.getItem("email")}`, {
+          method: 'POST'
+        })
+                .then(response => response.json())
+                .then(data => {
+                  this.appointments = data.data;
+                  // 获取教师详细信息
+                  this.appointments.forEach(appointment => {
+                    this.fetchTeacherDetails(appointment);
+                  });
+                })
+                .catch(error => {
+                  console.error('Error fetching appointment data:', error);
+                  alert('Error fetching appointment data. Please try again later.');
+                });
+      },
+      fetchTeacherDetails(appointment) {
+        fetch(`http://localhost:8080/teachers/${appointment.teacherEmail}`)
+                .then(response => response.json())
+                .then(data => {
+                  appointment.teacherName = data.data.name;
+                  appointment.teacherTitle = data.data.title;
+                  appointment.teacherDepartment = data.data.department;
+                  this.$forceUpdate(); // 强制 Vue 重新渲染
+                })
+                .catch(error => {
+                  console.error('Error fetching teacher details:', error);
+                  alert('Error fetching teacher details. Please try again later.');
+                });
+      },
+      cancelAppointment(teacherEmail, timeSlot) {
+        // 执行取消预约操作
+        fetch(`http://localhost:8080/appointments/${teacherEmail}/${localStorage.getItem('email')}/${timeSlot}`, {
+          method: 'DELETE'
+        })
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                  }
+                  return response.json();
+                })
+                .then(() => {
+                  alert('取消预约成功！');
+                  // 刷新页面，重新获取预约信息
+                  this.fetchAppointments();
+                })
+                .catch(error => {
+                  console.error('Error canceling appointment:', error);
+                  alert('Error canceling appointment. Please try again later.');
+                });
+      }
+    }
+  });
+</script>
+</body>
+</html>
