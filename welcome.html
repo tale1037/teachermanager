@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        
+        <h1>{{ msg }}</h1>
+        <table border="1" cellspacing="0" cellpadding="0">
+            <thead>
+                <tr>
+                    <th>老师名字</th>
+                    <th>Email</th>
+                    <th>Faculties</th>
+                    <th>Research Field</th>
+                    <th>Professional Title</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(teacher, index) in freetime" :key="index">
+                    <td>{{ teacher.teacherName }}</td>
+                    <td>{{ teacher.email }}</td>
+                    <td>{{ teacher.faculties }}</td>
+                    <td>{{ teacher.researchField }}</td>
+                    <td>{{ teacher.professionalTitle }}</td>
+                    <td>{{ teacher.address }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="form-group">
+            <label>用户邮箱</label>
+            <input type="text" class="form-control" id="username" placeholder="请输入用户名" v-model = "logininfo.email"/>
+        </div>
+        <div class="form-group">
+            <label>密码</label>
+            <input type="password" class="form-control" id="password" placeholder="请输入密码" v-model="logininfo.password"/>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <button class="btn btn-info btn-block btn-flat" id="loginBtn" v-on:click="login">登录</button>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-info btn-block btn-flat" id="resetBtn" type="reset">重置</button>
+            </div>
+        </div>
+        <label>{{promt}}</label>
+    </div>
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+    </script>
+    <script src="http://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="module">
+        import { createApp } from 'vue';
+
+        createApp({
+            data() {
+                return {
+                    logininfo:{
+                        email:"",
+                        password:""
+                    },
+                    promt:"hh",
+                    freetime: [],
+                    msg: "Nice to meet you"
+                };
+            },
+            methods:{
+                login:function(){
+                    axios.post(
+                        'http://localhost:259/user/login?email='+this.logininfo.email+'&password='+this.logininfo.password
+                    ).then(result=>{
+                        if(result.data.success){
+                            //this.$set(this, 'promt', result.data.message);
+                            console.log(this.prompt);
+                        }
+                        else
+                            this.prompt = result.data.message;
+                        console.log(result.data);
+                    }).catch(err=>{
+                        console.log(err);
+                    })
+                }
+            },
+            mounted() {
+                axios.get('http://localhost:259/teacher/getAllteacherinfo')
+                    .then(result => {
+                        this.freetime = result.data.data; // 注意这里要访问 result.data.data
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            }
+        }).mount("#app");
+    </script>
+</body>
+</html>
