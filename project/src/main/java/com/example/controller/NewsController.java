@@ -53,6 +53,7 @@ public class NewsController {
         public Result sendnews(@RequestHeader(name="Authorization",required = false) String token, HttpServletResponse response, @RequestBody News news) {
                 try {
                         System.out.println(1);
+                        System.out.println(news.toString());
                         Map<String,Object> claims = JwtUtil.parseToken(token);
                         String email = (String)claims.get("email");
                         System.out.println(claims.toString());
