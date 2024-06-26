@@ -1,8 +1,13 @@
 package com.example.service;
 
 import com.example.mapper.AppointmentMapper;
+import com.example.mapper.FreeTimeMapper;
+import com.example.mapper.StudentMapper;
+import com.example.mapper.TeacherMapper;
 import com.example.pojo.Appointment;
 import com.example.service.Impl.AppointmentService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +16,12 @@ import java.util.List;
 public class AppointmentServiceImpl implements AppointmentService {
         @Autowired
         private AppointmentMapper appointmentMapper;
-
+        @Autowired
+        private StudentMapper studentMapper;
+        @Autowired
+        private FreeTimeMapper freeTimeMapper;
+        @Autowired
+        private TeacherMapper teacherMapper;
         public List<Appointment> findAll(){
          List<Appointment> appointmentList=appointmentMapper.findAll();
          return appointmentList;
@@ -19,12 +29,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         public List<Appointment> findByTeacherEmail(String teacherEmail){
                 List<Appointment> appointmentList=appointmentMapper.findByTeacherEmail(teacherEmail);
+                for (Appointment appointment : appointmentList){
+                        appointment.setStudent_name(studentMapper.findStudentByEmail(appointment.getStudentEmail()).getName());
+                        appointment.setDate(freeTimeMapper.findById(appointment.getId()).getDate());
+                }
                 return appointmentList;
         }
 
         public List<Appointment> findByStudentEmail(String studentEmail){
                 List<Appointment> appointmentList=appointmentMapper.findByStudentEmail(studentEmail);
                 return appointmentList;
+        }
+
+        @Override
+        public void updateAStatusTo(int Astatus, int id) {
+                appointmentMapper.updateAStatusTo(Astatus,id);
         }
 
         public void deleteByTeacherAndStudentEmailAndTimeSlot(String teacherEmail, String studentEmail, String timeSlot){
@@ -41,14 +60,32 @@ public class AppointmentServiceImpl implements AppointmentService {
                 appointmentMapper.deleteByStudentEmail(studentEmail);
         }
 
+
+
         @Override
-        public void add(String teacherEmail, String studentEmail, String timeSlot,int id,boolean Astatus) {
-                appointmentMapper.add(teacherEmail,studentEmail,timeSlot,id,Astatus);
+        public void add(String teacherEmail, String studentEmail, String timeSlot,int id,boolean Astatus,String reason) {
+                appointmentMapper.add(teacherEmail,studentEmail,timeSlot,id,Astatus,reason);
         }
 
         @Override
         public Appointment findByTeacherEmailandTimeSlot(String timeSlot, String teacherEmail) {
                 return appointmentMapper.findByTeacherEmailandTimeSlot(teacherEmail,timeSlot);
+        }
+
+        @Override
+        public PageInfo<Appointment> getlistbystuEmail(int pageNum, int pageSize, String email) {
+                PageHelper.startPage(pageNum, pageSize);
+                List<Appointment> appointments=appointmentMapper.findByStudentEmail(email);
+                for (Appointment appointment : appointments){
+                        appointment.setTeacher_name(teacherMapper.findByEmail(appointment.getTeacherEmail()).getName());
+                        appointment.setDate(freeTimeMapper.findById(appointment.getId()).getDate());
+                }
+                return PageInfo.of(appointments);
+        }
+
+        @Override
+        public Appointment findByID(int id) {
+                return appointmentMapper.findByID(id);
         }
 
 }

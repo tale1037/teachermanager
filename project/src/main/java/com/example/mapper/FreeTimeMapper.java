@@ -12,6 +12,10 @@ public interface FreeTimeMapper {
     @Select("SELECT * FROM freetime")
     List<FreeTime> findAll();
 
+
+    @Select("SELECT * FROM freetime WHERE Tstatus=false")
+    List<FreeTime> findAllNo();
+
     // 根据教师邮箱查询空闲时间信息
     @Select("SELECT * FROM freetime WHERE teacherEmail = #{teacherEmail}")
     List<FreeTime> findByTeacherEmail(String teacherEmail);

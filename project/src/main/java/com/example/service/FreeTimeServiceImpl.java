@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.mapper.FreeTimeMapper;
+import com.example.mapper.TeacherMapper;
 import com.example.pojo.FreeTime;
 import com.example.pojo.Teacher;
 import com.example.service.Impl.FreeTimeService;
@@ -9,22 +10,32 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class FreeTimeServiceImpl implements FreeTimeService {
     @Autowired
     private FreeTimeMapper freeTimeMapper;
-
-    @Override
+    @Autowired
+    private TeacherMapper teacherMapper;
     public List<FreeTime> findAll() {
         List<FreeTime> freeTimeList=freeTimeMapper.findAll();
+        for (FreeTime freeTime : freeTimeList){
+            freeTime.setTeachername(teacherMapper.findByEmail(freeTime.getTeacherEmail()).getName());
+        }
         return freeTimeList;
     }
 
     @Override
     public List<FreeTime> findByTeacherEmail(String teacherEmail) {
         List<FreeTime> freeTimeList=freeTimeMapper.findByTeacherEmail(teacherEmail);
+        if(freeTimeList==null){
+            return new ArrayList<>();
+        }
+        for (FreeTime freeTime : freeTimeList){
+            freeTime.setTeachername(teacherMapper.findByEmail(freeTime.getTeacherEmail()).getName());
+        }
         return freeTimeList;
     }
 
@@ -60,18 +71,45 @@ public class FreeTimeServiceImpl implements FreeTimeService {
 
     @Override
     public PageInfo<FreeTime> findList(int pageNum, int pageSize) {
-        List<FreeTime> teacherlist=freeTimeMapper.findAll();
         PageHelper.startPage(pageNum, pageSize);
-        return PageInfo.of(teacherlist);
-    }
-
-    @Override
-    public PageInfo<FreeTime> findList(int pageNum, int pageSize, String email) {
-        List<FreeTime> freeTimeList=freeTimeMapper.findByTeacherEmail(email);
-        PageHelper.startPage(pageNum, pageSize);
+        List<FreeTime> freeTimeList=freeTimeMapper.findAllNo();
+        for (FreeTime freeTime : freeTimeList){
+            freeTime.setTeachername(teacherMapper.findByEmail(freeTime.getTeacherEmail()).getName());
+        }
         return PageInfo.of(freeTimeList);
     }
 
+    public PageInfo<FreeTime> findList(int pageNum, int pageSize, String email) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<FreeTime> freeTimeList=freeTimeMapper.findByTeacherEmail(email);
+
+        for (FreeTime freeTime : freeTimeList){
+            freeTime.setTeachername(teacherMapper.findByEmail(freeTime.getTeacherEmail()).getName());
+        }
+        return PageInfo.of(freeTimeList);
+    }
+    @Override
+    public  PageInfo<FreeTime> findByTeacherName(int pageNum, int pageSize, String teacherName) {
+        List<Teacher> teacherList=teacherMapper.findByName(teacherName);
+        List<FreeTime> freeTimeList =new ArrayList<>();
+        for(Teacher teacher : teacherList){
+            List<FreeTime> freeTime=freeTimeMapper.findByTeacherEmail(teacher.getEmail());
+            freeTimeList.addAll(freeTime);
+        }
+        for (FreeTime freeTime : freeTimeList) {
+            freeTime.setTeachername(teacherMapper.findByEmail(freeTime.getTeacherEmail()).getName());
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return PageInfo.of(freeTimeList);
+    }
+    @Override
+    public List<FreeTime> findAllNo() {
+        List<FreeTime> freeTimeList=freeTimeMapper.findAllNo();
+        for (FreeTime freeTime : freeTimeList){
+            freeTime.setTeachername(teacherMapper.findByEmail(freeTime.getTeacherEmail()).getName());
+        }
+        return freeTimeList;
+    }
     @Override
     public FreeTime findByID(int id) {
         FreeTime freeTime = freeTimeMapper.findById(id);

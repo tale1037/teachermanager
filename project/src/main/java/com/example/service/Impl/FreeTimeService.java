@@ -24,5 +24,9 @@ public interface FreeTimeService {
     PageInfo<FreeTime> findList(int pageNum, int pageSize);
     PageInfo<FreeTime> findList(int pageNum, int pageSize, String email);
 
+    PageInfo<FreeTime> findByTeacherName(int pageNum, int pageSize, String teacherName);
+
+    List<FreeTime> findAllNo();
+
     FreeTime findByID(int id);
 }

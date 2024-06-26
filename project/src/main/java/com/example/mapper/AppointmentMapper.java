@@ -29,9 +29,17 @@ public interface AppointmentMapper {
     @Delete("DELETE FROM appointment WHERE studentEmail = #{studentEmail}")
     void deleteByStudentEmail(@Param("studentEmail") String studentEmail);
 
-    @Insert("INSERT INTO appointment (teacherEmail, studentEmail, timeSlot,id,Astatus) VALUES (#{teacherEmail}, #{studentEmail}, #{timeSlot},#{id},#{Astatus})")
-    void add(@Param("teacherEmail") String teacherEmail, @Param("studentEmail") String studentEmail, @Param("timeSlot") String timeSlot,@Param("id") int id,@Param("Astatus") boolean Astatus);
+    @Delete("DELETE FROM appointment WHERE id = #{id}")
+    void deleteByid(@Param("id") int id);
+    @Insert("INSERT INTO appointment (teacherEmail, studentEmail, timeSlot,id,Astatus,reason) VALUES (#{teacherEmail}, #{studentEmail}, #{timeSlot},#{id},#{Astatus},#{reason})")
+    void add(@Param("teacherEmail") String teacherEmail, @Param("studentEmail") String studentEmail, @Param("timeSlot") String timeSlot,@Param("id") int id,@Param("Astatus") boolean Astatus,@Param("reason") String reason);
 
     @Select("SELECT * from appointment where teacherEmail = #{teacherEmail} and timeSlot = #{timeSlot}")
     Appointment findByTeacherEmailandTimeSlot(String teacherEmail, String timeSlot);
+
+    @Update("UPDATE appointment SET Astatus = #{Astatus} WHERE id = #{id}")
+    void updateAStatusTo(@Param("Astatus") int Astatus ,@Param("id") int id);
+
+    @Select("Select * from appointment where id = #{id}")
+    Appointment findByID(int id);
 }

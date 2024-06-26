@@ -26,8 +26,8 @@ public class StudentController {
       List<Student> studentList=studentService.findAllStudents();
       return Result.success(studentList);
       }
-      @GetMapping("/students/{email}")
-      public Result  findStudentByEmail(@PathVariable String email){
+      @GetMapping("/students/getbyemail")
+      public Result  findStudentByEmail(@RequestParam String email){
       Student student=studentService.findStudentByEmail(email);
       return Result.success(student);
      }
@@ -52,7 +52,7 @@ public class StudentController {
     public Result getfreeTimestoappointmment(@RequestHeader(name="Authorization") String token,@RequestBody FreeTime freeTime){
         Map<String,Object> map= JwtUtil.parseToken(token);
         String email= (String) map.get("email");
-        appointmentService.add(freeTime.getTeacherEmail(),email,freeTime.getTimeSlot(),freeTime.getId(),freeTime.isTstatus());
+        appointmentService.add(freeTime.getTeacherEmail(),email,freeTime.getTimeSlot(),freeTime.getId(),freeTime.isTstatus(),freeTime.getReason());
         freeTimeService.updateStatus(freeTime.getId(), false);
         return Result.success();
     }

@@ -20,4 +20,6 @@ public interface TeacherService {
     List<String> findAllDepartments();
     PageInfo<Teacher> findList(int pageNum, int pageSize);
     PageInfo<Teacher> findList(int pageNum, int pageSize, String name);
+
+    PageInfo<Teacher> findListbyDepartment(Integer pageNum, Integer pageSize, String inputDepartment);
 }

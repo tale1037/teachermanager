@@ -7,6 +7,7 @@ import com.example.pojo.Teacher;
 import com.example.service.Impl.AppointmentService;
 import com.example.service.Impl.StudentService;
 import com.example.utils.JwtUtil;
+import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,15 +45,26 @@ public class AppointmentController {
             appointmentService.deleteByTeacherAndStudentEmailAndTimeSlot(teacherEmail,studentEmail,timeSlot);
             return Result.success();
         }
-        @PostMapping("/appointments/student/{studentEmail}")
-        public Result  findByStudentEmail(@PathVariable String studentEmail){
-        List<Appointment> appointmentList=appointmentService.findByStudentEmail(studentEmail);
-        return Result.success(appointmentList);
+        @GetMapping("/student/appointment")
+        public Result  findByStudentEmail(@RequestHeader(name="Authorization",required = false) String token, HttpServletResponse response,@RequestParam Integer pageNum,@RequestParam Integer pageSize){
+            try {
+                System.out.println(1);
+                Map<String,Object> claims = JwtUtil.parseToken(token);
+                String email = (String)claims.get("email");
+                System.out.println(claims.toString());
+                PageInfo<Appointment> appointmentList=appointmentService.getlistbystuEmail(pageNum,pageSize,email);
+                return Result.success(appointmentList);
+                //return Response.success(teachers);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                response.setStatus(401);
+                return Result.error("weidenglu");
+            }
         }
         @PostMapping("/appointments/{teacherEmail}/{studentEmail}/{timeSlot}")
         public Result addAppointment(@PathVariable String teacherEmail,@PathVariable String studentEmail, @PathVariable String timeSlot) {
           //appointmentService.add(teacherEmail, studentEmail, timeSlot);
-          return Result.success();
+            return Result.success();
         }
         //@PostMapping('/')
 }

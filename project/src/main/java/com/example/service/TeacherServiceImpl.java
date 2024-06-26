@@ -74,15 +74,26 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public PageInfo<Teacher> findList(int pageNum, int pageSize) {
+        System.out.println("start pagehelper");
+        System.out.println(pageSize);
+        PageHelper.startPage(pageNum,pageSize);
         List<Teacher> teacherlist=teacherMapper.findAll();
-        PageHelper.startPage(pageNum, pageSize);
-        return PageInfo.of(teacherlist);
+        PageInfo<Teacher> pageInfo = new PageInfo<>(teacherlist);
+        System.out.println(pageInfo.getSize());
+        return pageInfo;
     }
 
     @Override
     public PageInfo<Teacher> findList(int pageNum, int pageSize, String name) {
-        List<Teacher> teacherlist=teacherMapper.findByName(name);
         PageHelper.startPage(pageNum, pageSize);
+        List<Teacher> teacherlist=teacherMapper.findByName(name);
+        return PageInfo.of(teacherlist);
+    }
+
+    @Override
+    public PageInfo<Teacher> findListbyDepartment(Integer pageNum, Integer pageSize, String inputDepartment) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Teacher> teacherlist=teacherMapper.findByDepartment(inputDepartment);
         return PageInfo.of(teacherlist);
     }
 }

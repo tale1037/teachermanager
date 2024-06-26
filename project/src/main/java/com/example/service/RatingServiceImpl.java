@@ -1,10 +1,14 @@
 package com.example.service;
 
 import com.example.mapper.RatingMapper;
-import com.example.mapper.UserPasswordMapper;
+import com.example.pojo.Rating;
 import com.example.service.Impl.RatingService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class RatingServiceImpl implements RatingService {
@@ -18,8 +22,8 @@ public class RatingServiceImpl implements RatingService {
         }
 
         @Override
-        public Float findRating(String teacherEmail, String studentEmail) {
-                Float rating=ratingMapper.findRating(teacherEmail,studentEmail);
+        public Rating findRating(String teacherEmail, String studentEmail) {
+                Rating rating=ratingMapper.findRating(teacherEmail,studentEmail);
                 return rating;
         }
 
@@ -41,5 +45,28 @@ public class RatingServiceImpl implements RatingService {
         @Override
         public void deleteRatingBystudentEmail(String studentEmail) {
                 ratingMapper.deleteRatingBystudentEmail(studentEmail);
+        }
+
+        @Override
+        public List<Rating> findteacherRating(String teacherEmail) {
+                List<Rating> ratingList=ratingMapper.findteacherRating(teacherEmail);
+                return ratingList;
+        }
+        @Override
+        public List<Rating> findstudentRating(String studentEmail) {
+                List<Rating> ratingList=ratingMapper.findstudentRating(studentEmail);
+                return ratingList;
+        }
+
+        @Override
+        public PageInfo<Rating> findstudentRating1(int pageNum, int pageSize, String studentEmail) {
+                List<Rating> ratingList=ratingMapper.findstudentRating(studentEmail);
+                PageHelper.startPage(pageNum, pageSize);
+                return PageInfo.of(ratingList);
+        }
+
+        @Override
+        public List<Rating> findAll() {
+                return ratingMapper.findAll();
         }
 }
