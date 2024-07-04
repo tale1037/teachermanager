@@ -31,10 +31,10 @@ public class NewsController {
         @GetMapping("/user/getmynews")
         public Result getMyNews(@RequestHeader(name="Authorization",required = false) String token, HttpServletResponse response) {
                 try {
-                        System.out.println(1);
+                       // System.out.println(1);
                         Map<String,Object> claims = JwtUtil.parseToken(token);
                         String email = (String)claims.get("email");
-                        System.out.println(claims.toString());
+                        //System.out.println(claims.toString());
                         boolean isteacher = (boolean)claims.get("isteacher");
                         return Result.success(newsService.findByEmail(email));
                         //return Response.success(teachers);
@@ -56,15 +56,28 @@ public class NewsController {
                         System.out.println(news.toString());
                         Map<String,Object> claims = JwtUtil.parseToken(token);
                         String email = (String)claims.get("email");
+                        boolean isteacher = (boolean)claims.get("isteacher");
+                        System.out.println(isteacher);
                         System.out.println(claims.toString());
                         news.setTitle("留言");
                         Date date = new Date();
+                        news.setIsread(false);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         news.setDate(sdf.format(date));
-                        if(userPasswordService.findUserPasswordByEmail(email).getIsTeacher()){
+                        if(news.getSender()!="system"&&news.getSender()!=null)
+                        {
+                                if(isteacher){
+                                        news.setEmail(studentService.findStudentByName(news.getSender()).get(0).getEmail());
+                                }
+                                else
+                                      news.setEmail(teacherService.findByName(news.getSender()).get(0).getEmail());
+                        }
+                        if(isteacher){
                                 news.setSender(teacherService.findByEmail(email).getName());
                         }
-                        news.setSender(studentService.findStudentByEmail(email).getName());
+                        else {
+                                news.setSender(studentService.findStudentByEmail(email).getName());
+                        }
                         newsService.inserrtNews(news);
                         return Result.success(1);
                         //return Response.success(teachers);

@@ -1,9 +1,7 @@
 package com.example.controller;
 
-import com.example.pojo.FreeTime;
 import com.example.pojo.Result;
 import com.example.pojo.UserPassword;
-import com.example.service.Impl.FreeTimeService;
 import com.example.service.Impl.UserPasswordService;
 import com.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;

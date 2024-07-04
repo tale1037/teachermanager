@@ -2,7 +2,10 @@ package com.example.service;
 
 import com.example.mapper.StudentMapper;
 import com.example.pojo.Student;
-import com.example.service.Impl.*;
+import com.example.service.Impl.AppointmentService;
+import com.example.service.Impl.RatingService;
+import com.example.service.Impl.StudentService;
+import com.example.service.Impl.UserPasswordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

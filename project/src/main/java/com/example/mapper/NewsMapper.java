@@ -10,7 +10,7 @@ import java.util.List;
 public interface NewsMapper {
 
 
-    @Select("SELECT * from news where email = #{email}")
+    @Select("SELECT * from news where email = #{email} order by date desc")
     List<News> findByEmail(String email);
 
 

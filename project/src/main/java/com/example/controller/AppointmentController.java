@@ -2,10 +2,7 @@ package com.example.controller;
 
 import com.example.pojo.Appointment;
 import com.example.pojo.Result;
-import com.example.pojo.Student;
-import com.example.pojo.Teacher;
 import com.example.service.Impl.AppointmentService;
-import com.example.service.Impl.StudentService;
 import com.example.utils.JwtUtil;
 import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletResponse;

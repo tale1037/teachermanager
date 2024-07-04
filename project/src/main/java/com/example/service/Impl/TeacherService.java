@@ -1,7 +1,6 @@
 package com.example.service.Impl;
 
 import com.example.pojo.Teacher;
-import com.example.pojo.listquery;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

@@ -2,7 +2,6 @@ package com.example.pojo;
 
 import lombok.Data;
 
-import java.util.List;
 @Data
 public class Student {
     public String getName() {

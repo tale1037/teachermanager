@@ -3,8 +3,9 @@ package com.example.controller;
 import com.example.pojo.FreeTime;
 import com.example.pojo.Result;
 import com.example.pojo.Student;
-import com.example.pojo.Teacher;
-import com.example.service.Impl.*;
+import com.example.service.Impl.AppointmentService;
+import com.example.service.Impl.FreeTimeService;
+import com.example.service.Impl.StudentService;
 import com.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -52,8 +53,7 @@ public class StudentController {
     public Result getfreeTimestoappointmment(@RequestHeader(name="Authorization") String token,@RequestBody FreeTime freeTime){
         Map<String,Object> map= JwtUtil.parseToken(token);
         String email= (String) map.get("email");
-        appointmentService.add(freeTime.getTeacherEmail(),email,freeTime.getTimeSlot(),freeTime.getId(),freeTime.isTstatus(),freeTime.getReason());
-        freeTimeService.updateStatus(freeTime.getId(), false);
+        appointmentService.add(freeTime.getTeacherEmail(),email,freeTime.getTimeSlot(),freeTime.getId(),0,freeTime.getReason());
         return Result.success();
     }
 }

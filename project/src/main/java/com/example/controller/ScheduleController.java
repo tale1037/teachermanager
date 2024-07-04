@@ -45,7 +45,9 @@ public class ScheduleController {
             boolean isteacher = (boolean) claims.get("isteacher");
            // schedule.setTeacher_email(email);
         //String email = "2439082470@qq.com";
+            String plan = schedule.getPlan();
 
+            schedule.setPlan(plan.split("<p>")[1].split("</p>")[0]);
             //System.out.println(schedule.getDate().split("T")[0].split("-"));
             String thisdate = schedule.getDate().split("T")[0];
             String year = thisdate.split("-")[0];

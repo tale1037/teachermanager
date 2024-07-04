@@ -1,9 +1,7 @@
 package com.example.service;
 
 import com.example.mapper.TeacherMapper;
-import com.example.pojo.Student;
 import com.example.pojo.Teacher;
-import com.example.pojo.listquery;
 import com.example.service.Impl.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

@@ -2,7 +2,6 @@ package com.example.pojo;
 
 import lombok.Data;
 
-import java.util.List;
 @Data
 public class Teacher {
     private String name;
@@ -18,5 +17,6 @@ public class Teacher {
     private String homepage;
     private float rating;
     private String country;
+    private String basicinfo;
 }
 

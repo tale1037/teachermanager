@@ -9,16 +9,20 @@ import java.util.List;
 public interface FreeTimeMapper {
 
     // 查询所有空闲时间信息
-    @Select("SELECT * FROM freetime")
+    @Select("SELECT * FROM freetime ORDER BY date ASC, timeSlot ASC")
     List<FreeTime> findAll();
+    @Select("SELECT * FROM freetime WHERE Tstatus = 0 and id NOT IN (SELECT id FROM appointment where appointment.studentEmail = #{studentEmail})")
+    List<FreeTime> findFreeTimeno(String studentEmail);
+    @Select("SELECT * FROM freetime WHERE teacherEmail = #{teacherEmail} and Tstatus = 0 and id NOT IN (SELECT id FROM appointment where appointment.studentEmail = #{studentEmail}) ORDER BY date ASC, timeSlot ASC")
+    List<FreeTime> findByTeacherEmail2(String teacherEmail,String studentEmail);
 
-
-    @Select("SELECT * FROM freetime WHERE Tstatus=false")
+    @Select("SELECT * FROM freetime WHERE Tstatus=false ORDER BY date ASC, timeSlot ASC")
     List<FreeTime> findAllNo();
 
     // 根据教师邮箱查询空闲时间信息
-    @Select("SELECT * FROM freetime WHERE teacherEmail = #{teacherEmail}")
+    @Select("SELECT * FROM freetime WHERE teacherEmail = #{teacherEmail} ORDER BY date ASC, timeSlot ASC")
     List<FreeTime> findByTeacherEmail(String teacherEmail);
+
 
 
     // 新增空闲时间信息
@@ -47,6 +51,6 @@ public interface FreeTimeMapper {
     @Update("UPDATE freetime SET Tstatus = #{Tstatus} WHERE id = #{id}")
     void updateStatus(@Param("id") int id, @Param("Tstatus") boolean Tstatus);
 
-    @Select("SELECT * from freetime where id = #{id}")
+    @Select("SELECT * from freetime where id = #{id} ORDER BY date ASC, timeSlot ASC")
     FreeTime findById(int id);
 }

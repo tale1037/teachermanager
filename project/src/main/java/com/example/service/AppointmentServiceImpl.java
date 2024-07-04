@@ -42,8 +42,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         @Override
-        public void updateAStatusTo(int Astatus, int id) {
-                appointmentMapper.updateAStatusTo(Astatus,id);
+        public void updateAStatusTo(int Astatus, int id,String studentEmail) {
+                appointmentMapper.updateAStatusTo(Astatus,id,studentEmail);
         }
 
         public void deleteByTeacherAndStudentEmailAndTimeSlot(String teacherEmail, String studentEmail, String timeSlot){
@@ -60,16 +60,14 @@ public class AppointmentServiceImpl implements AppointmentService {
                 appointmentMapper.deleteByStudentEmail(studentEmail);
         }
 
-
-
         @Override
-        public void add(String teacherEmail, String studentEmail, String timeSlot,int id,boolean Astatus,String reason) {
-                appointmentMapper.add(teacherEmail,studentEmail,timeSlot,id,Astatus,reason);
+        public void deleteid(int id) {
+                appointmentMapper.deleteByid(id);
         }
 
         @Override
-        public Appointment findByTeacherEmailandTimeSlot(String timeSlot, String teacherEmail) {
-                return appointmentMapper.findByTeacherEmailandTimeSlot(teacherEmail,timeSlot);
+        public void add(String teacherEmail, String studentEmail, String timeSlot,int id,int Astatus,String reason) {
+                appointmentMapper.add(teacherEmail,studentEmail,timeSlot,id,Astatus,reason);
         }
 
         @Override
@@ -84,8 +82,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         @Override
-        public Appointment findByID(int id) {
+        public List<Appointment> findByID(int id) {
                 return appointmentMapper.findByID(id);
+        }
+
+        @Override
+        public Appointment findBykey(int id, String studentEmail) {
+                return appointmentMapper.findBykey(id,studentEmail);
         }
 
 }
